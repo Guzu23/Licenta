@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="shaders"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-17">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/JOGL/gluegen.jar"/>
+	<classpathentry kind="lib" path="lib/JOGL/gluegen-rt.jar"/>
+	<classpathentry kind="lib" path="lib/JOGL/gluegen-rt-natives-windows-amd64.jar"/>
+	<classpathentry kind="lib" path="lib/JOGL/jogl-all.jar"/>
+	<classpathentry kind="lib" path="lib/JOGL/jogl-all-natives-windows-amd64.jar"/>
+	<classpathentry kind="lib" path="lib/JOGL/gluegen-java-src.zip"/>
+	<classpathentry kind="lib" path="lib/JOGL/jogl-java-src.zip"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
