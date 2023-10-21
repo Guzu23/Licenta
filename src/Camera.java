@@ -18,7 +18,7 @@ public class Camera {
 	float YAW_MAX = (float) (Math.PI - epsilon);
 	float YAW_MIN = (float) (-Math.PI + epsilon);
 	
-	float PLAYER_SPEED = 0.2f;
+	float PLAYER_SPEED = 0.1f;
 	float MOUSE_SENSITIVITY = 0.05f;
 	//PLAYER_POSITION IS RELEVANT FOR HITBOX LATER
 	float[] PLAYER_POSITION = {0.0f, 0.0f, 0.0f};;

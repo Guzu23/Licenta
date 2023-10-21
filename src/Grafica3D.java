@@ -22,7 +22,6 @@ import com.jogamp.opengl.util.texture.TextureIO;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.nio.FloatBuffer;
@@ -36,6 +35,12 @@ public class Grafica3D extends Frame implements GLEventListener{
 	private IntBuffer VAO, VBO, tex;
 	private TextureData texture;
 	private Matrix4 model, view, projection;
+	private boolean w_pressed = false;
+	private boolean s_pressed = false;
+	private boolean a_pressed = false;
+	private boolean d_pressed = false;
+	private boolean space_pressed = false;
+	private boolean shift_pressed = false;
 	//ADD ZOOM IN-OUT = LOWER THE FOV
 	//PLAYER_POSITION IS RELEVANT FOR HITBOX LATER
 	//Camera camera = new Camera(new float[]{0.0f, 0.0f, -5.0f}, 0.0f, 0.0f, 800, 600);
@@ -59,37 +64,12 @@ public class Grafica3D extends Frame implements GLEventListener{
 	    	
 	    	@Override
 	        public void keyPressed(KeyEvent e) {
-	        	//System.out.println("press");
 	    	    handleKeyPress(e);
 	        }
 
 	        @Override
 	        public void keyReleased(KeyEvent e) {
-	        	//System.out.println("release");
-	        	/*
-	    	    switch (e.getKeyCode()) {
-	    	        case KeyEvent.VK_W:
-	    	        	w_pressed = false;
-	    	            break;
-	    	        case KeyEvent.VK_S:
-	    	        	s_pressed = false;
-	    	            break;
-	    	        case KeyEvent.VK_A:
-	    	        	a_pressed = false;
-	    	            break;
-	    	        case KeyEvent.VK_D:
-	    	        	d_pressed = false;
-	    	            break;
-	    	        case KeyEvent.VK_SPACE:
-	    	        	space_pressed = false;
-	    	            break;
-	    	        case KeyEvent.VK_SHIFT:
-	    	        	k_pressed = false;
-	    	            break;
-	    	        default:
-	    	            break;
-	    	    }
-	    	    */
+				handleKeyRelease(e);
 	        }
 	    });
 	    window.addMouseListener(new MouseAdapter() {
@@ -178,39 +158,25 @@ public class Grafica3D extends Frame implements GLEventListener{
     
     
 	void handleKeyPress(KeyEvent e) {
-		//System.out.println("press");
-		//System.out.println("yaw: " + camera.yaw + " | pitch: " + camera.pitch);
-		float cos_yaw_times_player_speed = (float) (camera.PLAYER_SPEED*Math.cos(camera.yaw));
-		float sin_yaw_times_player_speed = (float) (camera.PLAYER_SPEED*Math.sin(camera.yaw));
-		//System.out.println("cos_yaw*player_speed: " + cos_yaw_times_player_speed);
-		//System.out.println("sin_yaw*player_speed: " + sin_yaw_times_player_speed);
-		switch (e.getKeyCode()) {
-        case KeyEvent.VK_W:
-			updatePlayerPosition(sin_yaw_times_player_speed, 0, cos_yaw_times_player_speed);
-            break;
-        case KeyEvent.VK_S:
-        	updatePlayerPosition(-sin_yaw_times_player_speed, 0, -cos_yaw_times_player_speed);
-            break;
-        case KeyEvent.VK_A:
-        	updatePlayerPosition(cos_yaw_times_player_speed, 0, -sin_yaw_times_player_speed);
-            break;
-        case KeyEvent.VK_D:
-        	updatePlayerPosition(-cos_yaw_times_player_speed, 0, sin_yaw_times_player_speed);
-            break;
-        case KeyEvent.VK_SPACE:
-			updatePlayerPosition(0, -camera.PLAYER_SPEED, 0);
-            break;
-        case KeyEvent.VK_F:
-        	updatePlayerPosition(0, camera.PLAYER_SPEED, 0);
-            break;
-        case KeyEvent.VK_ESCAPE:
-        	System.exit(0);
-        default:
-            break;
+		if ((KeyEvent.AUTOREPEAT_MASK & e.getModifiers()) == 0) {
+			if(e.getKeyCode() == KeyEvent.VK_W) w_pressed = true;
+			if(e.getKeyCode() == KeyEvent.VK_S) s_pressed = true;
+			if(e.getKeyCode() == KeyEvent.VK_A) a_pressed = true;
+			if(e.getKeyCode() == KeyEvent.VK_D) d_pressed = true;
+			if(e.getKeyCode() == KeyEvent.VK_SPACE) space_pressed = true;
+			if(e.getKeyCode() == KeyEvent.VK_SHIFT) shift_pressed = true;
+			if(e.getKeyCode() == KeyEvent.VK_ESCAPE) System.exit(0);
 		}
 	}
 	void handleKeyRelease(KeyEvent e) {
-	
+		if ((KeyEvent.AUTOREPEAT_MASK & e.getModifiers()) == 0) {
+			if(e.getKeyCode() == KeyEvent.VK_W) 	w_pressed = false;
+			if(e.getKeyCode() == KeyEvent.VK_S) 	s_pressed = false;
+			if(e.getKeyCode() == KeyEvent.VK_A) 	a_pressed = false;
+			if(e.getKeyCode() == KeyEvent.VK_D) 	d_pressed = false;
+			if(e.getKeyCode() == KeyEvent.VK_SPACE) space_pressed = false;
+			if(e.getKeyCode() == KeyEvent.VK_SHIFT) shift_pressed = false;
+		}
 	}
 	
 	void handleMouseMove(MouseEvent e, int dx, int dy) {
@@ -407,7 +373,16 @@ public class Grafica3D extends Frame implements GLEventListener{
 	}
 	@Override
 	public void display(GLAutoDrawable drawable) {
-		
+		//Move the camera
+		float cos_yaw_times_player_speed = (float) (camera.PLAYER_SPEED*Math.cos(camera.yaw));
+		float sin_yaw_times_player_speed = (float) (camera.PLAYER_SPEED*Math.sin(camera.yaw));
+		if(w_pressed)		updatePlayerPosition(sin_yaw_times_player_speed, 0, cos_yaw_times_player_speed);
+        if(s_pressed)		updatePlayerPosition(-sin_yaw_times_player_speed, 0, -cos_yaw_times_player_speed);
+        if(a_pressed)		updatePlayerPosition(cos_yaw_times_player_speed, 0, -sin_yaw_times_player_speed);
+        if(d_pressed) 		updatePlayerPosition(-cos_yaw_times_player_speed, 0, sin_yaw_times_player_speed);
+        if(space_pressed)	updatePlayerPosition(0, -camera.PLAYER_SPEED, 0);
+        if(shift_pressed)	updatePlayerPosition(0, camera.PLAYER_SPEED, 0);
+
 		GL4 gl = drawable.getGL().getGL4();		
 		gl.glUseProgram(shaderProgram.program());
 		String hexColor = "#3f6fac"; // Orange color
