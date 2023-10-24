@@ -1,6 +1,9 @@
 import java.awt.Dimension;
 import java.awt.Toolkit;
 
+import com.jogamp.newt.event.MouseEvent;
+import com.jogamp.opengl.math.Matrix4;
+
 public class Camera {
 	static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 	float ASPECT_RATIO = screenSize.width / screenSize.height;
@@ -42,7 +45,7 @@ public class Camera {
 		this.pitch = pitch;
 	}
 
-	public void updateYawPitch(double yawDelta, double pitchDelta) {
+	void updateYawPitch(double yawDelta, double pitchDelta) {
 		yaw += (float) yawDelta;
 		pitch += (float) pitchDelta;
 
@@ -59,5 +62,62 @@ public class Camera {
 
 		// System.out.println(yaw);
 		// System.out.println(pitch);
+	}
+
+	void translateCamera(float x, float y, float z) {
+		POSITION[0] += x;
+		POSITION[1] += y;
+		POSITION[2] += z;
+		WindowPerspective.view.translate(x, y, z);
+	}
+
+	void updateCameraPosition() {
+		// Move the camera object
+		float cos_yaw_times_player_speed = (float) (PLAYER_SPEED * Math.cos(yaw));
+		float sin_yaw_times_player_speed = (float) (PLAYER_SPEED * Math.sin(yaw));
+		if (Listener.w_pressed)
+			translateCamera(sin_yaw_times_player_speed, 0, cos_yaw_times_player_speed);
+		if (Listener.s_pressed)
+			translateCamera(-sin_yaw_times_player_speed, 0, -cos_yaw_times_player_speed);
+		if (Listener.a_pressed)
+			translateCamera(cos_yaw_times_player_speed, 0, -sin_yaw_times_player_speed);
+		if (Listener.d_pressed)
+			translateCamera(-cos_yaw_times_player_speed, 0, sin_yaw_times_player_speed);
+		if (Listener.space_pressed)
+			translateCamera(0, -PLAYER_SPEED, 0);
+		if (Listener.shift_pressed)
+			translateCamera(0, PLAYER_SPEED, 0);
+	}
+
+	void updateCameraView(MouseEvent e) {
+		int deltaX = e.getX() - WindowPerspective.prevMouseX;
+		int deltaY = e.getY() - WindowPerspective.prevMouseY;
+
+		// Reposition the mouse cursor to the center of the window
+		WindowPerspective.window.warpPointer(screenSize.width / 2,
+				screenSize.height / 2);
+
+		// Update the previous mouse position
+		WindowPerspective.prevMouseX = screenSize.width / 2;
+		WindowPerspective.prevMouseY = screenSize.height / 2;
+		// Update camera yaw and pitch angles based on mouse movement
+		float yawDelta = (float) Math.toRadians(-deltaX * MOUSE_SENSITIVITY);
+		float pitchDelta = (float) Math.toRadians(-deltaY * MOUSE_SENSITIVITY);
+		updateYawPitch(yawDelta, pitchDelta);
+
+		// Rotate the camera angles
+		Matrix4 horizontalRotation = new Matrix4();
+		if (pitch < PITCH_MAX && pitch > PITCH_MIN) {
+			horizontalRotation.rotate(-yawDelta, 0.0f, (float) (Math.cos(pitch)),
+					(float) (-Math.sin(pitch)));
+			horizontalRotation.rotate(-pitchDelta, 1.0f, 0.0f, 0.0f);
+		} else
+			horizontalRotation.rotate((float) (-yawDelta), 0.0f, 0.0f, (float) (-Math.sin(pitch)));
+
+		// Update the camera view
+		Matrix4 result = new Matrix4();
+		result.multMatrix(horizontalRotation);
+		result.multMatrix(WindowPerspective.view);
+		WindowPerspective.view = result;
 	}
 }
