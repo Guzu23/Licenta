@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.Random;
 
 public class WindowPerspective implements GLEventListener {
 	protected static GLWindow window;
@@ -90,54 +91,111 @@ public class WindowPerspective implements GLEventListener {
 				camera.FAR);
 		view.translate(camera.POSITION[0], camera.POSITION[1], camera.POSITION[2]);
 
-		gl.glDeleteShader(vertexShader.id());
-		gl.glDeleteShader(fragmentShader.id());
+		// gl.glDeleteShader(vertexShader.id());
+		// gl.glDeleteShader(fragmentShader.id());
+		/*
+		 * float[] verticesArray = new float[] {
+		 * // x, y, z, texCoords
+		 * -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
+		 * 0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
+		 * 0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+		 * 0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+		 * -0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
+		 * -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
+		 * 
+		 * -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+		 * 0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
+		 * 0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
+		 * 0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
+		 * -0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
+		 * -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+		 * 
+		 * -0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+		 * -0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+		 * -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+		 * -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+		 * -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+		 * -0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+		 * 
+		 * 0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+		 * 0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+		 * 0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+		 * 0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+		 * 0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+		 * 0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+		 * 
+		 * -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+		 * 0.5f, -0.5f, -0.5f, 1.0f, 1.0f,
+		 * 0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
+		 * 0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
+		 * -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+		 * -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+		 * 
+		 * -0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
+		 * 0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+		 * 0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+		 * 0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+		 * -0.5f, 0.5f, 0.5f, 0.0f, 0.0f,
+		 * -0.5f, 0.5f, -0.5f, 0.0f, 1.0f
+		 * };
+		 */
+		Random random = new Random();
+		float[] vert = new float[864];
 
+		for (int i = 0; i <= 12; i++) {
+			for (int j = 0; j <= 5; j++) {
+				vert[i * 6 * 5 + j * 5 + 0] = (0.5f * (-7 + i));
+				vert[i * 6 * 5 + j * 5 + 1] = (float) (0.5f * j);
+				vert[i * 6 * 5 + j * 5 + 2] = (0.5f * (-7 + j));
+				vert[i * 6 * 5 + j * 5 + 3] = 0.0f;
+				vert[i * 6 * 5 + j * 5 + 4] = 1.0f;
+			}
+		}
 		float[] verticesArray = new float[] {
 				// x, y, z, texCoords
-				-0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
-				0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
-				0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-				0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-				-0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
-				-0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
+				-1.5f, -0.5f, -1.5f, 0.0f, 0.0f,
+				-1.5f, -0.5f, -1.0f, 1.0f, 0.0f,
+				-1.0f, 0.5f, -1.5f, 1.0f, 1.0f,
+				-1.5f, -0.5f, -1.0f, 1.0f, 1.0f,
+				-1.0f, 0.5f, -1.5f, 0.0f, 1.0f,
+				-1.0f, -0.5f, -1.0f, 0.0f, 0.0f,
 
-				-0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-				0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
-				0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
-				0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
-				-0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
-				-0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+				-1.0f, 0.5f, -1.5f, 0.0f, 0.0f,
+				-1.0f, 0.5f, -1.0f, 1.0f, 0.0f,
+				-0.5f, 0.5f, -1.5f, 1.0f, 1.0f,
+				-1.0f, 0.5f, -1.0f, 1.0f, 1.0f,
+				-0.5f, 0.5f, -1.5f, 0.0f, 1.0f,
+				-0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
 
-				-0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-				-0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-				-0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-				-0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-				-0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-				-0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+				-0.5f, -0.5f, -1.5f, 0.0f, 0.0f,
+				-0.5f, -0.5f, -1.0f, 1.0f, 0.0f,
+				-0.0f, 0.5f, -1.5f, 1.0f, 1.0f,
+				-0.5f, 0.5f, -1.0f, 1.0f, 1.0f,
+				-0.0f, 0.5f, -1.5f, 0.0f, 1.0f,
+				-0.0f, -0.5f, -1.0f, 0.0f, 0.0f,
 
-				0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-				0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-				0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-				0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-				0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-				0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+				0.0f, -0.5f, -1.5f, 0.0f, 0.0f,
+				0.0f, -0.5f, -1.0f, 1.0f, 0.0f,
+				0.5f, 0.5f, -1.5f, 1.0f, 1.0f,
+				0.0f, 0.5f, -1.0f, 1.0f, 1.0f,
+				0.5f, 0.5f, -1.5f, 0.0f, 1.0f,
+				0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
 
-				-0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-				0.5f, -0.5f, -0.5f, 1.0f, 1.0f,
-				0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
-				0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
-				-0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-				-0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+				0.5f, -0.5f, -1.5f, 0.0f, 0.0f,
+				0.5f, -0.5f, -1.0f, 1.0f, 0.0f,
+				1.0f, 0.5f, -1.5f, 1.0f, 1.0f,
+				0.5f, 0.5f, -1.0f, 1.0f, 1.0f,
+				1.0f, 0.5f, -1.5f, 0.0f, 1.0f,
+				1.0f, -0.5f, -1.0f, 0.0f, 0.0f,
 
-				-0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
-				0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-				0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-				0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-				-0.5f, 0.5f, 0.5f, 0.0f, 0.0f,
-				-0.5f, 0.5f, -0.5f, 0.0f, 1.0f
+				1.0f, -0.5f, -1.5f, 0.0f, 0.0f,
+				1.0f, -0.5f, -1.0f, 1.0f, 0.0f,
+				1.5f, 0.5f, -1.5f, 1.0f, 1.0f,
+				1.0f, 0.5f, -1.0f, 1.0f, 1.0f,
+				1.5f, 0.5f, -1.5f, 0.0f, 1.0f,
+				1.5f, -0.5f, -1.0f, 0.0f, 0.0f,
 		};
-		FloatBuffer vertices = GLBuffers.newDirectFloatBuffer(verticesArray);
+		FloatBuffer vertices = GLBuffers.newDirectFloatBuffer(vert);
 
 		VAO = IntBuffer.allocate(1);
 		VBO = IntBuffer.allocate(1);
@@ -206,7 +264,7 @@ public class WindowPerspective implements GLEventListener {
 		gl.glUniformMatrix4fv(gl.glGetUniformLocation(shaderProgram.program(), "view"), 1, false, view.getMatrix(), 0);
 
 		gl.glBindVertexArray(VAO.get(0));
-		gl.glDrawArrays(GL.GL_TRIANGLES, 0, 36);
+		gl.glDrawArrays(GL.GL_TRIANGLES, 0, 864);
 	}
 
 	@Override
