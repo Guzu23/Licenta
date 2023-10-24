@@ -1,0 +1,6 @@
+{
+    "outline.collapseItems": "alwaysExpand",
+    "debug.console.wordWrap": false,
+    "debug.inlineValues": "auto",
+    "java.format.onType.enabled": false
+}

@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-public class WindowPerspective extends Frame implements GLEventListener {
+public class WindowPerspective implements GLEventListener {
 	protected static GLWindow window;
 	private FPSAnimator anim;
 	private ShaderProgram shaderProgram;
@@ -176,20 +176,12 @@ public class WindowPerspective extends Frame implements GLEventListener {
 	}
 
 	@Override
-	public void dispose(GLAutoDrawable drawable) {
-		GL4 gl = drawable.getGL().getGL4();
-		gl.glDeleteVertexArrays(1, VAO);
-		gl.glDeleteBuffers(1, VBO);
-		anim.stop();
-	}
-
-	@Override
 	public void display(GLAutoDrawable drawable) {
 		camera.updateCameraPosition();
 
 		GL4 gl = drawable.getGL().getGL4();
 		gl.glUseProgram(shaderProgram.program());
-		String hexColor = "#3f6fac"; // Orange color
+		String hexColor = "#3f6fac";
 		Color color = Color.decode(hexColor);
 		float red = color.getRed() / 255.0f;
 		float green = color.getGreen() / 255.0f;
@@ -215,6 +207,14 @@ public class WindowPerspective extends Frame implements GLEventListener {
 
 		gl.glBindVertexArray(VAO.get(0));
 		gl.glDrawArrays(GL.GL_TRIANGLES, 0, 36);
+	}
+
+	@Override
+	public void dispose(GLAutoDrawable drawable) {
+		GL4 gl = drawable.getGL().getGL4();
+		gl.glDeleteVertexArrays(1, VAO);
+		gl.glDeleteBuffers(1, VBO);
+		anim.stop();
 	}
 
 	@Override
