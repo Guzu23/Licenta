@@ -139,61 +139,118 @@ public class WindowPerspective implements GLEventListener {
 		 * -0.5f, 0.5f, -0.5f, 0.0f, 1.0f
 		 * };
 		 */
-		Random random = new Random();
-		float[] vert = new float[864];
 
-		for (int i = 0; i <= 12; i++) {
-			for (int j = 0; j <= 5; j++) {
-				vert[i * 6 * 5 + j * 5 + 0] = (0.5f * (-7 + i));
-				vert[i * 6 * 5 + j * 5 + 1] = (float) (0.5f * j);
-				vert[i * 6 * 5 + j * 5 + 2] = (0.5f * (-7 + j));
-				vert[i * 6 * 5 + j * 5 + 3] = 0.0f;
-				vert[i * 6 * 5 + j * 5 + 4] = 1.0f;
+		int mapSize = 15;
+		int numVertices = mapSize * mapSize * 6; // 6 vertices per quad
+		float[] vert = new float[numVertices * 5];
+
+		float step = 1.0f; // Adjust this value to control the spacing between points
+
+		for (int i = 0; i < mapSize; i++) {
+			for (int j = 0; j < mapSize; j++) {
+				int baseIndex = (i * mapSize + j) * 6 * 5;
+
+				float x = i * step; // Adjust step for spacing
+				float y = 0.0f; // Set the y-coordinate to a fixed value
+				float z = j * step; // Adjust step for spacing
+
+				// Set the values in the array
+				vert[baseIndex] = x;
+				vert[baseIndex + 1] = y;
+				vert[baseIndex + 2] = z;
+				vert[baseIndex + 3] = 0.0f; // Fixed value of 0.0f
+				vert[baseIndex + 4] = 1.0f; // Fixed value of 1.0f
 			}
 		}
+
 		float[] verticesArray = new float[] {
 				// x, y, z, texCoords
-				-1.5f, -0.5f, -1.5f, 0.0f, 0.0f,
-				-1.5f, -0.5f, -1.0f, 1.0f, 0.0f,
-				-1.0f, 0.5f, -1.5f, 1.0f, 1.0f,
-				-1.5f, -0.5f, -1.0f, 1.0f, 1.0f,
-				-1.0f, 0.5f, -1.5f, 0.0f, 1.0f,
-				-1.0f, -0.5f, -1.0f, 0.0f, 0.0f,
+				-1.5f, 0.0f, -1.5f, 0.0f, 1.0f,
+				-1.0f, 1.0f, -1.5f, 1.0f, 0.0f,
+				-1.5f, -1.0f, -1.0f, 1.0f, 1.0f,
+				-1.0f, -0.5f, -1.0f, 0.0f, 1.0f,
+				-1.0f, 1.0f, -1.5f, 1.0f, 0.0f,
+				-1.5f, -1.0f, -1.0f, 1.0f, 1.0f,
 
-				-1.0f, 0.5f, -1.5f, 0.0f, 0.0f,
-				-1.0f, 0.5f, -1.0f, 1.0f, 0.0f,
-				-0.5f, 0.5f, -1.5f, 1.0f, 1.0f,
-				-1.0f, 0.5f, -1.0f, 1.0f, 1.0f,
-				-0.5f, 0.5f, -1.5f, 0.0f, 1.0f,
-				-0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
+				-1.0f, 1.0f, -1.5f, 0.0f, 1.0f,
+				-0.5f, 0.0f, -1.5f, 1.0f, 0.0f,
+				-1.0f, -0.5f, -1.0f, 1.0f, 1.0f,
+				-0.5f, -1.0f, -1.0f, 0.0f, 1.0f,
+				-0.5f, 0.0f, -1.5f, 1.0f, 0.0f,
+				-1.0f, -0.5f, -1.0f, 1.0f, 1.0f,
 
-				-0.5f, -0.5f, -1.5f, 0.0f, 0.0f,
-				-0.5f, -0.5f, -1.0f, 1.0f, 0.0f,
-				-0.0f, 0.5f, -1.5f, 1.0f, 1.0f,
-				-0.5f, 0.5f, -1.0f, 1.0f, 1.0f,
-				-0.0f, 0.5f, -1.5f, 0.0f, 1.0f,
-				-0.0f, -0.5f, -1.0f, 0.0f, 0.0f,
+				-0.5f, 0.0f, -1.5f, 0.0f, 1.0f,
+				0.0f, -1.0f, -1.5f, 1.0f, 0.0f,
+				-0.5f, -1.0f, -1.0f, 1.0f, 1.0f,
+				0.0f, -0.5f, -1.0f, 0.0f, 1.0f,
+				0.0f, -1.0f, -1.5f, 1.0f, 0.0f,
+				-0.5f, -1.0f, -1.0f, 1.0f, 1.0f,
 
-				0.0f, -0.5f, -1.5f, 0.0f, 0.0f,
-				0.0f, -0.5f, -1.0f, 1.0f, 0.0f,
-				0.5f, 0.5f, -1.5f, 1.0f, 1.0f,
-				0.0f, 0.5f, -1.0f, 1.0f, 1.0f,
-				0.5f, 0.5f, -1.5f, 0.0f, 1.0f,
-				0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
+				0.0f, -1.0f, -1.5f, 0.0f, 1.0f,
+				0.5f, -0.5f, -1.5f, 1.0f, 0.0f,
+				0.0f, -0.5f, -1.0f, 1.0f, 1.0f,
+				0.5f, -1.0f, -1.0f, 0.0f, 1.0f,
+				0.5f, -0.5f, -1.5f, 1.0f, 0.0f,
+				0.0f, -0.5f, -1.0f, 1.0f, 1.0f,
 
-				0.5f, -0.5f, -1.5f, 0.0f, 0.0f,
+				0.5f, -0.5f, -1.5f, 0.0f, 1.0f,
+				1.0f, -0.0f, -1.5f, 1.0f, 0.0f,
+				0.5f, -1.0f, -1.0f, 1.0f, 1.0f,
+				1.0f, -0.5f, -1.0f, 0.0f, 1.0f,
+				1.0f, -0.0f, -1.5f, 1.0f, 0.0f,
+				0.5f, -1.0f, -1.0f, 1.0f, 1.0f,
+
+				1.0f, -0.0f, -1.5f, 0.0f, 1.0f,
+				1.5f, -1.0f, -1.5f, 1.0f, 0.0f,
+				1.0f, -0.5f, -1.0f, 1.0f, 1.0f,
+				1.5f, 0.5f, -1.0f, 0.0f, 1.0f,
+				1.5f, -1.0f, -1.5f, 1.0f, 0.0f,
+				1.0f, -0.5f, -1.0f, 1.0f, 1.0f,
+
+				// ====
+
+				-1.5f, -1.0f, -1.0f, 0.0f, 1.0f,
+				-1.0f, -0.5f, -1.0f, 1.0f, 0.0f,
+				-1.5f, -0.5f, -0.5f, 1.0f, 1.0f,
+				-1.0f, -1.0f, -0.5f, 0.0f, 1.0f,
+				-1.0f, -0.5f, -1.0f, 1.0f, 0.0f,
+				-1.5f, -0.5f, -0.5f, 1.0f, 1.0f,
+
+				-1.0f, 1.0f, -1.0f, 0.0f, 1.0f,
+				-0.5f, 0.0f, -1.0f, 1.0f, 0.0f,
+				-1.0f, -0.5f, -0.5f, 1.0f, 1.0f,
+				-0.5f, -1.0f, -0.5f, 0.0f, 1.0f,
+				-0.5f, 0.0f, -1.0f, 1.0f, 0.0f,
+				-1.0f, -0.5f, -0.5f, 1.0f, 1.0f,
+
+				-0.5f, 0.0f, -1.0f, 0.0f, 1.0f,
+				0.0f, -1.0f, -1.0f, 1.0f, 0.0f,
+				-0.5f, -1.0f, -0.5f, 1.0f, 1.0f,
+				0.0f, -0.5f, -0.5f, 0.0f, 1.0f,
+				0.0f, -1.0f, -1.0f, 1.0f, 0.0f,
+				-0.5f, -1.0f, -0.5f, 1.0f, 1.0f,
+
+				0.0f, -1.0f, -1.0f, 0.0f, 1.0f,
 				0.5f, -0.5f, -1.0f, 1.0f, 0.0f,
-				1.0f, 0.5f, -1.5f, 1.0f, 1.0f,
-				0.5f, 0.5f, -1.0f, 1.0f, 1.0f,
-				1.0f, 0.5f, -1.5f, 0.0f, 1.0f,
-				1.0f, -0.5f, -1.0f, 0.0f, 0.0f,
+				0.0f, -0.5f, -0.5f, 1.0f, 1.0f,
+				0.5f, -1.0f, -0.5f, 0.0f, 1.0f,
+				0.5f, -0.5f, -1.0f, 1.0f, 0.0f,
+				0.0f, -0.5f, -0.5f, 1.0f, 1.0f,
 
-				1.0f, -0.5f, -1.5f, 0.0f, 0.0f,
-				1.0f, -0.5f, -1.0f, 1.0f, 0.0f,
-				1.5f, 0.5f, -1.5f, 1.0f, 1.0f,
-				1.0f, 0.5f, -1.0f, 1.0f, 1.0f,
-				1.5f, 0.5f, -1.5f, 0.0f, 1.0f,
-				1.5f, -0.5f, -1.0f, 0.0f, 0.0f,
+				0.5f, -0.5f, -1.0f, 0.0f, 1.0f,
+				1.0f, -0.0f, -1.0f, 1.0f, 0.0f,
+				0.5f, -1.0f, -0.5f, 1.0f, 1.0f,
+				1.0f, -0.5f, -0.5f, 0.0f, 1.0f,
+				1.0f, -0.0f, -1.0f, 1.0f, 0.0f,
+				0.5f, -1.0f, -0.5f, 1.0f, 1.0f,
+
+				1.0f, -0.0f, -1.0f, 0.0f, 1.0f,
+				1.5f, -1.0f, -1.0f, 1.0f, 0.0f,
+				1.0f, -0.5f, -0.5f, 1.0f, 1.0f,
+				1.5f, 0.5f, -0.5f, 0.0f, 1.0f,
+				1.5f, -1.0f, -1.0f, 1.0f, 0.0f,
+				1.0f, -0.5f, -0.5f, 1.0f, 1.0f,
+
 		};
 		FloatBuffer vertices = GLBuffers.newDirectFloatBuffer(vert);
 
@@ -264,7 +321,7 @@ public class WindowPerspective implements GLEventListener {
 		gl.glUniformMatrix4fv(gl.glGetUniformLocation(shaderProgram.program(), "view"), 1, false, view.getMatrix(), 0);
 
 		gl.glBindVertexArray(VAO.get(0));
-		gl.glDrawArrays(GL.GL_TRIANGLES, 0, 864);
+		gl.glDrawArrays(GL.GL_TRIANGLES, 0, 6750);
 	}
 
 	@Override

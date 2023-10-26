@@ -32,7 +32,7 @@ public class Camera {
 		Camera.screenSize.height = 600;
 		this.POSITION[0] = 0.0f;
 		this.POSITION[1] = 0.0f;
-		this.POSITION[2] = -7.5f;
+		this.POSITION[2] = -7.0f;
 		this.yaw = 0.0f;
 		this.pitch = 0.0f;
 	}
