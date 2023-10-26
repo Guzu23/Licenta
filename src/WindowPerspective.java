@@ -21,7 +21,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.util.Random;
 
 public class WindowPerspective implements GLEventListener {
 	protected static GLWindow window;
@@ -93,166 +92,53 @@ public class WindowPerspective implements GLEventListener {
 
 		// gl.glDeleteShader(vertexShader.id());
 		// gl.glDeleteShader(fragmentShader.id());
-		/*
-		 * float[] verticesArray = new float[] {
-		 * // x, y, z, texCoords
-		 * -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
-		 * 0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
-		 * 0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-		 * 0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-		 * -0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
-		 * -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
-		 * 
-		 * -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-		 * 0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
-		 * 0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
-		 * 0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
-		 * -0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
-		 * -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-		 * 
-		 * -0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-		 * -0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-		 * -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-		 * -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-		 * -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-		 * -0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-		 * 
-		 * 0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-		 * 0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-		 * 0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-		 * 0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-		 * 0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-		 * 0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-		 * 
-		 * -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-		 * 0.5f, -0.5f, -0.5f, 1.0f, 1.0f,
-		 * 0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
-		 * 0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
-		 * -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-		 * -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-		 * 
-		 * -0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
-		 * 0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-		 * 0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-		 * 0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-		 * -0.5f, 0.5f, 0.5f, 0.0f, 0.0f,
-		 * -0.5f, 0.5f, -0.5f, 0.0f, 1.0f
-		 * };
-		 */
-
-		int mapSize = 15;
-		int numVertices = mapSize * mapSize * 6; // 6 vertices per quad
-		float[] vert = new float[numVertices * 5];
-
-		float step = 1.0f; // Adjust this value to control the spacing between points
-
-		for (int i = 0; i < mapSize; i++) {
-			for (int j = 0; j < mapSize; j++) {
-				int baseIndex = (i * mapSize + j) * 6 * 5;
-
-				float x = i * step; // Adjust step for spacing
-				float y = 0.0f; // Set the y-coordinate to a fixed value
-				float z = j * step; // Adjust step for spacing
-
-				// Set the values in the array
-				vert[baseIndex] = x;
-				vert[baseIndex + 1] = y;
-				vert[baseIndex + 2] = z;
-				vert[baseIndex + 3] = 0.0f; // Fixed value of 0.0f
-				vert[baseIndex + 4] = 1.0f; // Fixed value of 1.0f
-			}
-		}
 
 		float[] verticesArray = new float[] {
 				// x, y, z, texCoords
-				-1.5f, 0.0f, -1.5f, 0.0f, 1.0f,
-				-1.0f, 1.0f, -1.5f, 1.0f, 0.0f,
-				-1.5f, -1.0f, -1.0f, 1.0f, 1.0f,
-				-1.0f, -0.5f, -1.0f, 0.0f, 1.0f,
-				-1.0f, 1.0f, -1.5f, 1.0f, 0.0f,
-				-1.5f, -1.0f, -1.0f, 1.0f, 1.0f,
+				-0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
+				0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
+				0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+				0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+				-0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
+				-0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
 
-				-1.0f, 1.0f, -1.5f, 0.0f, 1.0f,
-				-0.5f, 0.0f, -1.5f, 1.0f, 0.0f,
-				-1.0f, -0.5f, -1.0f, 1.0f, 1.0f,
-				-0.5f, -1.0f, -1.0f, 0.0f, 1.0f,
-				-0.5f, 0.0f, -1.5f, 1.0f, 0.0f,
-				-1.0f, -0.5f, -1.0f, 1.0f, 1.0f,
+				-0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+				0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
+				0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
+				0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
+				-0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
+				-0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
 
-				-0.5f, 0.0f, -1.5f, 0.0f, 1.0f,
-				0.0f, -1.0f, -1.5f, 1.0f, 0.0f,
-				-0.5f, -1.0f, -1.0f, 1.0f, 1.0f,
-				0.0f, -0.5f, -1.0f, 0.0f, 1.0f,
-				0.0f, -1.0f, -1.5f, 1.0f, 0.0f,
-				-0.5f, -1.0f, -1.0f, 1.0f, 1.0f,
+				-0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+				-0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+				-0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+				-0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+				-0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+				-0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
 
-				0.0f, -1.0f, -1.5f, 0.0f, 1.0f,
-				0.5f, -0.5f, -1.5f, 1.0f, 0.0f,
-				0.0f, -0.5f, -1.0f, 1.0f, 1.0f,
-				0.5f, -1.0f, -1.0f, 0.0f, 1.0f,
-				0.5f, -0.5f, -1.5f, 1.0f, 0.0f,
-				0.0f, -0.5f, -1.0f, 1.0f, 1.0f,
+				0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+				0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+				0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+				0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+				0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+				0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
 
-				0.5f, -0.5f, -1.5f, 0.0f, 1.0f,
-				1.0f, -0.0f, -1.5f, 1.0f, 0.0f,
-				0.5f, -1.0f, -1.0f, 1.0f, 1.0f,
-				1.0f, -0.5f, -1.0f, 0.0f, 1.0f,
-				1.0f, -0.0f, -1.5f, 1.0f, 0.0f,
-				0.5f, -1.0f, -1.0f, 1.0f, 1.0f,
+				-0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+				0.5f, -0.5f, -0.5f, 1.0f, 1.0f,
+				0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
+				0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
+				-0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+				-0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
 
-				1.0f, -0.0f, -1.5f, 0.0f, 1.0f,
-				1.5f, -1.0f, -1.5f, 1.0f, 0.0f,
-				1.0f, -0.5f, -1.0f, 1.0f, 1.0f,
-				1.5f, 0.5f, -1.0f, 0.0f, 1.0f,
-				1.5f, -1.0f, -1.5f, 1.0f, 0.0f,
-				1.0f, -0.5f, -1.0f, 1.0f, 1.0f,
-
-				// ====
-
-				-1.5f, -1.0f, -1.0f, 0.0f, 1.0f,
-				-1.0f, -0.5f, -1.0f, 1.0f, 0.0f,
-				-1.5f, -0.5f, -0.5f, 1.0f, 1.0f,
-				-1.0f, -1.0f, -0.5f, 0.0f, 1.0f,
-				-1.0f, -0.5f, -1.0f, 1.0f, 0.0f,
-				-1.5f, -0.5f, -0.5f, 1.0f, 1.0f,
-
-				-1.0f, 1.0f, -1.0f, 0.0f, 1.0f,
-				-0.5f, 0.0f, -1.0f, 1.0f, 0.0f,
-				-1.0f, -0.5f, -0.5f, 1.0f, 1.0f,
-				-0.5f, -1.0f, -0.5f, 0.0f, 1.0f,
-				-0.5f, 0.0f, -1.0f, 1.0f, 0.0f,
-				-1.0f, -0.5f, -0.5f, 1.0f, 1.0f,
-
-				-0.5f, 0.0f, -1.0f, 0.0f, 1.0f,
-				0.0f, -1.0f, -1.0f, 1.0f, 0.0f,
-				-0.5f, -1.0f, -0.5f, 1.0f, 1.0f,
-				0.0f, -0.5f, -0.5f, 0.0f, 1.0f,
-				0.0f, -1.0f, -1.0f, 1.0f, 0.0f,
-				-0.5f, -1.0f, -0.5f, 1.0f, 1.0f,
-
-				0.0f, -1.0f, -1.0f, 0.0f, 1.0f,
-				0.5f, -0.5f, -1.0f, 1.0f, 0.0f,
-				0.0f, -0.5f, -0.5f, 1.0f, 1.0f,
-				0.5f, -1.0f, -0.5f, 0.0f, 1.0f,
-				0.5f, -0.5f, -1.0f, 1.0f, 0.0f,
-				0.0f, -0.5f, -0.5f, 1.0f, 1.0f,
-
-				0.5f, -0.5f, -1.0f, 0.0f, 1.0f,
-				1.0f, -0.0f, -1.0f, 1.0f, 0.0f,
-				0.5f, -1.0f, -0.5f, 1.0f, 1.0f,
-				1.0f, -0.5f, -0.5f, 0.0f, 1.0f,
-				1.0f, -0.0f, -1.0f, 1.0f, 0.0f,
-				0.5f, -1.0f, -0.5f, 1.0f, 1.0f,
-
-				1.0f, -0.0f, -1.0f, 0.0f, 1.0f,
-				1.5f, -1.0f, -1.0f, 1.0f, 0.0f,
-				1.0f, -0.5f, -0.5f, 1.0f, 1.0f,
-				1.5f, 0.5f, -0.5f, 0.0f, 1.0f,
-				1.5f, -1.0f, -1.0f, 1.0f, 0.0f,
-				1.0f, -0.5f, -0.5f, 1.0f, 1.0f,
-
+				-0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
+				0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+				0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+				0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+				-0.5f, 0.5f, 0.5f, 0.0f, 0.0f,
+				-0.5f, 0.5f, -0.5f, 0.0f, 1.0f
 		};
-		FloatBuffer vertices = GLBuffers.newDirectFloatBuffer(vert);
+
+		FloatBuffer vertices = GLBuffers.newDirectFloatBuffer(verticesArray);
 
 		VAO = IntBuffer.allocate(1);
 		VBO = IntBuffer.allocate(1);
