@@ -29,12 +29,10 @@ public class WindowPerspective implements GLEventListener {
 	private IntBuffer VAO, VBO, tex;
 	private TextureData texture;
 	protected static Matrix4 model, view, projection;
-
-	// ADD ZOOM IN-OUT = LOWER THE FOV
+	// ADD ZOOM IN-OUT = LOWER/INCREASE THE FOV
 	// camera.POSITION IS RELEVANT FOR HITBOX LATER
-	// Camera camera = new Camera(new float[]{0.0f, 0.0f, -5.0f}, 0.0f, 0.0f, 800,
-	// 600);
 	public static Camera camera = new Camera();
+	BaseTerrain base = new BaseTerrain();
 	public static int prevMouseX = Camera.screenSize.width / 2;
 	public static int prevMouseY = Camera.screenSize.height / 2;
 	Listener listener = new Listener();
@@ -50,11 +48,10 @@ public class WindowPerspective implements GLEventListener {
 		window = GLWindow.create(screen, caps);
 		window.setSize(Camera.screenSize.width, Camera.screenSize.height);
 		window.setTitle("Grafica 3D in Java");
-
 		window.addGLEventListener(this);
 		window.setVisible(true);
-
 		this.listener.addListeners();
+
 		anim = new FPSAnimator(window, 60);
 		anim.start();
 	}
@@ -93,51 +90,7 @@ public class WindowPerspective implements GLEventListener {
 		gl.glDeleteShader(vertexShader.id());
 		gl.glDeleteShader(fragmentShader.id());
 
-		float[] verticesArray = new float[] {
-				// x, y, z, texCoords
-				-0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
-				0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
-				0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-				0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-				-0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
-				-0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
-
-				-0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-				0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
-				0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
-				0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
-				-0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
-				-0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-
-				-0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-				-0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-				-0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-				-0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-				-0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-				-0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-
-				0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-				0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-				0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-				0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-				0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-				0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-
-				-0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-				0.5f, -0.5f, -0.5f, 1.0f, 1.0f,
-				0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
-				0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
-				-0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-				-0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-
-				-0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
-				0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-				0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-				0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-				-0.5f, 0.5f, 0.5f, 0.0f, 0.0f,
-				-0.5f, 0.5f, -0.5f, 0.0f, 1.0f
-		};
-		FloatBuffer vertices = GLBuffers.newDirectFloatBuffer(verticesArray);
+		FloatBuffer vertices = GLBuffers.newDirectFloatBuffer(base.generated_vertices_array);
 
 		VAO = IntBuffer.allocate(1);
 		VBO = IntBuffer.allocate(1);
@@ -156,7 +109,7 @@ public class WindowPerspective implements GLEventListener {
 		gl.glEnableVertexAttribArray(1);
 
 		try {
-			texture = TextureIO.newTextureData(gl.getGLProfile(), new File("res/container2.png"), GL4.GL_TEXTURE_2D,
+			texture = TextureIO.newTextureData(gl.getGLProfile(), new File("res/container1.png"), GL4.GL_TEXTURE_2D,
 					GL4.GL_RGBA, false, "png");
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -194,11 +147,6 @@ public class WindowPerspective implements GLEventListener {
 		gl.glBindTexture(GL4.GL_TEXTURE_2D, tex.get(0));
 		gl.glUniform1i(gl.glGetUniformLocation(shaderProgram.program(), "tex"), 0);
 
-		// model.loadIdentity();
-		// long currMillis = System.currentTimeMillis();
-		// model.rotate((float)(2 * Math.PI * (currMillis % 2000) / 2000.0), 1.0f, 1.0f,
-		// 0.0f);
-
 		gl.glUniformMatrix4fv(gl.glGetUniformLocation(shaderProgram.program(), "model"), 1, false, model.getMatrix(),
 				0);
 		gl.glUniformMatrix4fv(gl.glGetUniformLocation(shaderProgram.program(), "projection"), 1, false,
@@ -206,7 +154,7 @@ public class WindowPerspective implements GLEventListener {
 		gl.glUniformMatrix4fv(gl.glGetUniformLocation(shaderProgram.program(), "view"), 1, false, view.getMatrix(), 0);
 
 		gl.glBindVertexArray(VAO.get(0));
-		gl.glDrawArrays(GL.GL_TRIANGLES, 0, 36);
+		gl.glDrawArrays(GL.GL_TRIANGLES, 0, (base.limit + 1) * (base.limit + 1) * 30);
 	}
 
 	@Override

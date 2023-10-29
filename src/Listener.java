@@ -99,16 +99,11 @@ public class Listener {
     void handleMouseWheelMoved(MouseEvent e) {
         int notches = (int) e.getRotation()[1];
         if (notches < 0) {
-            // Scrolling down (toward the user)
-            // Handle scroll down action here
             WindowPerspective.camera.PLAYER_SPEED -= 0.02f;
             if (WindowPerspective.camera.PLAYER_SPEED < 0)
                 WindowPerspective.camera.PLAYER_SPEED = 0.0f;
-        } else {
-            // Scrolling up (away from the user)
-            // Handle scroll up action here
+        } else
             WindowPerspective.camera.PLAYER_SPEED += 0.02f;
-        }
     }
 
     void handleMouseReleased(MouseEvent e) {
@@ -124,8 +119,7 @@ public class Listener {
     }
 
     void handleMousePressed(MouseEvent e) {
-        if (e.getButton() == InputEvent.BUTTON1_MASK) {
+        if (e.getButton() == InputEvent.BUTTON1_MASK)
             WindowPerspective.window.confinePointer(true); // Confine the pointer to the window
-        }
     }
 }

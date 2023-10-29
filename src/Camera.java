@@ -13,7 +13,6 @@ public class Camera {
 	// 0.5) * ASPECT_RATIO);
 	float NEAR = 0.1f;
 	float FAR = 2000.0f;
-
 	float yaw = (float) Math.toRadians(0);
 	float pitch = (float) Math.toRadians(0);
 	float epsilon = 0.0001f;
@@ -31,12 +30,13 @@ public class Camera {
 		Camera.screenSize.width = 800;
 		Camera.screenSize.height = 600;
 		this.POSITION[0] = 0.0f;
-		this.POSITION[1] = 0.0f;
-		this.POSITION[2] = -7.5f;
+		this.POSITION[1] = -5.0f;
+		this.POSITION[2] = 0.0f;
 		this.yaw = 0.0f;
 		this.pitch = 0.0f;
 	}
 
+	//Another constructor for debugging (I will delete that later maybe)
 	public Camera(float[] POSITION, float yaw, float pitch, int screenSize_width, int screenSize_height) {
 		Camera.screenSize.width = screenSize_width;
 		Camera.screenSize.height = screenSize_width;
@@ -59,14 +59,11 @@ public class Camera {
 			pitch = PITCH_MAX;
 		else if (pitch < PITCH_MIN)
 			pitch = PITCH_MIN;
-
-		// System.out.println(yaw);
-		// System.out.println(pitch);
 	}
 
 	void translateCamera(float x, float y, float z) {
 		POSITION[0] += x;
-		POSITION[1] += y;
+		POSITION[1] -= y;
 		POSITION[2] += z;
 		WindowPerspective.view.translate(x, y, z);
 	}
@@ -108,8 +105,7 @@ public class Camera {
 		// Rotate the camera angles
 		Matrix4 horizontalRotation = new Matrix4();
 		if (pitch < PITCH_MAX && pitch > PITCH_MIN) {
-			horizontalRotation.rotate(-yawDelta, 0.0f, (float) (Math.cos(pitch)),
-					(float) (-Math.sin(pitch)));
+			horizontalRotation.rotate(-yawDelta, 0.0f, (float) (Math.cos(pitch)), (float) (-Math.sin(pitch)));
 			horizontalRotation.rotate(-pitchDelta, 1.0f, 0.0f, 0.0f);
 		} else
 			horizontalRotation.rotate((float) (-yawDelta), 0.0f, 0.0f, (float) (-Math.sin(pitch)));
