@@ -109,7 +109,8 @@ public class WindowPerspective implements GLEventListener {
 		gl.glEnableVertexAttribArray(1);
 
 		try {
-			texture = TextureIO.newTextureData(gl.getGLProfile(), new File("res/container1.png"), GL4.GL_TEXTURE_2D,
+			texture = TextureIO.newTextureData(gl.getGLProfile(), new File("res/grass2.png"),
+					GL4.GL_TEXTURE_2D,
 					GL4.GL_RGBA, false, "png");
 		} catch (IOException e) {
 			e.printStackTrace();
