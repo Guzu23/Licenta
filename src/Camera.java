@@ -12,7 +12,7 @@ public class Camera {
 	// float HORIZONTAL_FOV = 2 * (float) Math.atan((float) Math.tan(VERTICAL_FOV *
 	// 0.5) * ASPECT_RATIO);
 	float NEAR = 0.1f;
-	float FAR = 2000.0f;
+	float FAR = 20000.0f;
 	float yaw = (float) Math.toRadians(0);
 	float pitch = (float) Math.toRadians(0);
 	float epsilon = 0.0001f;
@@ -21,17 +21,16 @@ public class Camera {
 	float YAW_MAX = (float) (Math.PI - epsilon);
 	float YAW_MIN = (float) (-Math.PI + epsilon);
 
-	float PLAYER_SPEED = 0.1f;
+	float PLAYER_SPEED = 30.0f;
 	float MOUSE_SENSITIVITY = 0.05f;
 	// POSITION IS RELEVANT FOR HITBOX LATER
-	float[] POSITION = { 0.0f, 0.0f, 0.0f };;
+	float[] POSITION = { 720.0f, 140.0f, 720.0f };
+	static int CHUNK_X = 0;
+	static int CHUNK_Z = 0;
 
 	public Camera() {
 		Camera.screenSize.width = 800;
 		Camera.screenSize.height = 600;
-		this.POSITION[0] = 0.0f;
-		this.POSITION[1] = -5.0f;
-		this.POSITION[2] = 0.0f;
 		this.yaw = 0.0f;
 		this.pitch = 0.0f;
 	}
@@ -62,10 +61,12 @@ public class Camera {
 	}
 
 	void translateCamera(float x, float y, float z) {
-		POSITION[0] += x;
+		POSITION[0] -= x;
 		POSITION[1] -= y;
-		POSITION[2] += z;
+		POSITION[2] -= z;
 		WindowPerspective.view.translate(x, y, z);
+		CHUNK_X = (int) Math.floor(POSITION[0] / 1440);
+		CHUNK_Z = (int) Math.floor(POSITION[2] / 1440);
 	}
 
 	void updateCameraPosition() {
@@ -84,6 +85,15 @@ public class Camera {
 			translateCamera(0, -PLAYER_SPEED, 0);
 		if (Listener.shift_pressed)
 			translateCamera(0, PLAYER_SPEED, 0);
+
+	}
+
+	void printPosition() {
+		System.out.println("X = " + POSITION[0]);
+		System.out.println("Y = " + POSITION[1]);
+		System.out.println("Z = " + POSITION[2]);
+		System.out.println("CHUNK_X = " + CHUNK_X);
+		System.out.println("CHUNK_Z = " + CHUNK_Z);
 	}
 
 	void updateCameraView(MouseEvent e) {

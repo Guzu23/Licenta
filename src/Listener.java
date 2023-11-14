@@ -73,6 +73,7 @@ public class Listener {
             if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
                 System.exit(0);
         }
+        WindowPerspective.camera.printPosition();
     }
 
     void handleKeyRelease(KeyEvent e) {
@@ -99,11 +100,11 @@ public class Listener {
     void handleMouseWheelMoved(MouseEvent e) {
         int notches = (int) e.getRotation()[1];
         if (notches < 0) {
-            WindowPerspective.camera.PLAYER_SPEED -= 0.02f;
+            WindowPerspective.camera.PLAYER_SPEED -= 0.2f;
             if (WindowPerspective.camera.PLAYER_SPEED < 0)
                 WindowPerspective.camera.PLAYER_SPEED = 0.0f;
         } else
-            WindowPerspective.camera.PLAYER_SPEED += 0.02f;
+            WindowPerspective.camera.PLAYER_SPEED += 0.2f;
     }
 
     void handleMouseReleased(MouseEvent e) {

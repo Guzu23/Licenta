@@ -13,29 +13,31 @@ import com.jogamp.opengl.util.FPSAnimator;
 import com.jogamp.opengl.util.GLBuffers;
 import com.jogamp.opengl.util.glsl.ShaderCode;
 import com.jogamp.opengl.util.glsl.ShaderProgram;
-import com.jogamp.opengl.util.texture.TextureData;
-import com.jogamp.opengl.util.texture.TextureIO;
 
 import java.awt.*;
-import java.io.File;
-import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class WindowPerspective implements GLEventListener {
+	private ExecutorService executor = Executors.newSingleThreadExecutor();
+
 	protected static GLWindow window;
 	private FPSAnimator anim;
 	private ShaderProgram shaderProgram;
 	private IntBuffer VAO, VBO, tex;
-	private TextureData texture;
+
 	protected static Matrix4 model, view, projection;
 	// ADD ZOOM IN-OUT = LOWER/INCREASE THE FOV
 	// camera.POSITION IS RELEVANT FOR HITBOX LATER
 	public static Camera camera = new Camera();
-	BaseTerrain base = new BaseTerrain();
+	//BaseTerrain base = new BaseTerrain();
 	public static int prevMouseX = Camera.screenSize.width / 2;
 	public static int prevMouseY = Camera.screenSize.height / 2;
 	Listener listener = new Listener();
+	LoadedChunks loadedChunks = new LoadedChunks(0, 0);
 
 	public WindowPerspective() {
 		GLProfile glp = GLProfile.getMaxProgrammableCore(true);
@@ -58,6 +60,20 @@ public class WindowPerspective implements GLEventListener {
 
 	@Override
 	public void init(GLAutoDrawable drawable) {
+		/*
+		double center_Lon = 27.572410;
+		double center_lat = 47.174121;
+		double delta_latitude = 0.000833333333;
+		double delta_Longitude = 0.000833333333;
+		double min_Lon = center_Lon - 8 * delta_Longitude;
+		double max_lat = center_lat + 8 * delta_latitude;
+		double max_Lon = center_Lon + 8 * delta_Longitude;
+		double min_lat = center_lat - 8 * delta_latitude;
+		System.out.println(min_Lon);
+		System.out.println(max_lat);
+		System.out.println(max_Lon);
+		System.out.println(min_lat);
+		*/
 		GL4 gl = drawable.getGL().getGL4();
 
 		gl.glEnable(GL4.GL_DEPTH_TEST);
@@ -85,12 +101,10 @@ public class WindowPerspective implements GLEventListener {
 
 		projection.makePerspective((float) Math.toRadians(camera.FOV_DEGREE), camera.ASPECT_RATIO, camera.NEAR,
 				camera.FAR);
-		view.translate(camera.POSITION[0], camera.POSITION[1], camera.POSITION[2]);
+		view.translate(camera.POSITION[0], -camera.POSITION[1], camera.POSITION[2]);
 
 		gl.glDeleteShader(vertexShader.id());
 		gl.glDeleteShader(fragmentShader.id());
-
-		FloatBuffer vertices = GLBuffers.newDirectFloatBuffer(base.generated_vertices_array);
 
 		VAO = IntBuffer.allocate(1);
 		VBO = IntBuffer.allocate(1);
@@ -102,18 +116,13 @@ public class WindowPerspective implements GLEventListener {
 		gl.glGenBuffers(1, VBO);
 		gl.glBindBuffer(GL.GL_ARRAY_BUFFER, VBO.get(0));
 
-		gl.glBufferData(GL.GL_ARRAY_BUFFER, vertices.limit() * GLBuffers.SIZEOF_FLOAT, vertices, GL.GL_STATIC_DRAW);
 		gl.glVertexAttribPointer(0, 3, GL.GL_FLOAT, false, 5 * GLBuffers.SIZEOF_FLOAT, 0);
 		gl.glVertexAttribPointer(1, 2, GL.GL_FLOAT, false, 5 * GLBuffers.SIZEOF_FLOAT, 3 * GLBuffers.SIZEOF_FLOAT);
 		gl.glEnableVertexAttribArray(0);
 		gl.glEnableVertexAttribArray(1);
 
-		try {
-			texture = TextureIO.newTextureData(gl.getGLProfile(), new File("res/container1.png"), GL4.GL_TEXTURE_2D,
-					GL4.GL_RGBA, false, "png");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		loadedChunks.loadTextures(gl);
+
 		gl.glGenTextures(1, tex);
 		gl.glBindTexture(GL4.GL_TEXTURE_2D, tex.get(0));
 
@@ -121,10 +130,7 @@ public class WindowPerspective implements GLEventListener {
 		gl.glTexParameteri(GL4.GL_TEXTURE_2D, GL4.GL_TEXTURE_WRAP_T, GL4.GL_REPEAT);
 		gl.glTexParameteri(GL4.GL_TEXTURE_2D, GL4.GL_TEXTURE_MIN_FILTER, GL4.GL_LINEAR);
 		gl.glTexParameteri(GL4.GL_TEXTURE_2D, GL4.GL_TEXTURE_MAG_FILTER, GL4.GL_LINEAR);
-		gl.glTexImage2D(
-				GL4.GL_TEXTURE_2D, 0, GL4.GL_RGBA,
-				texture.getWidth(), texture.getHeight(), 0,
-				GL4.GL_RGBA, GL4.GL_UNSIGNED_BYTE, texture.getBuffer());
+
 		gl.glGenerateMipmap(GL4.GL_TEXTURE_2D);
 	}
 
@@ -154,7 +160,69 @@ public class WindowPerspective implements GLEventListener {
 		gl.glUniformMatrix4fv(gl.glGetUniformLocation(shaderProgram.program(), "view"), 1, false, view.getMatrix(), 0);
 
 		gl.glBindVertexArray(VAO.get(0));
-		gl.glDrawArrays(GL.GL_TRIANGLES, 0, (base.limit + 1) * (base.limit + 1) * 30);
+		drawChunks(gl);
+	}
+
+	void updateChunks(GL4 gl) {
+		if (Camera.CHUNK_X == loadedChunks.CENTER_CHUNK_X && Camera.CHUNK_Z == loadedChunks.CENTER_CHUNK_Z)
+			return;
+		if (Camera.CHUNK_Z + 1 == loadedChunks.CENTER_CHUNK_Z) {
+			loadedChunks.updateNorth(gl);
+			return;
+		}
+		if (Camera.CHUNK_Z - 1 == loadedChunks.CENTER_CHUNK_Z) {
+			loadedChunks.updateSouth(gl);
+			return;
+		}
+		if (Camera.CHUNK_X + 1 == loadedChunks.CENTER_CHUNK_X) {
+			loadedChunks.updateWest(gl);
+			return;
+		}
+		if (Camera.CHUNK_X - 1 == loadedChunks.CENTER_CHUNK_X) {
+			loadedChunks.updateEast(gl);
+			return;
+		}
+		loadedChunks = new LoadedChunks(Camera.CHUNK_X, Camera.CHUNK_Z);
+		loadedChunks.loadTextures(gl);
+	}
+
+	void calculateLOD(GL4 gl, int i, int j) {
+		int chunkX = i - LoadedChunks.render_distance;
+		int chunkZ = j - LoadedChunks.render_distance;
+		int lodLevel = (int) Math.sqrt((chunkX - Camera.CHUNK_X) * (chunkX - Camera.CHUNK_X)
+				+ (chunkZ - Camera.CHUNK_Z) * (chunkZ - Camera.CHUNK_Z));
+
+		gl.glTexParameteri(GL4.GL_TEXTURE_2D, GL4.GL_TEXTURE_MIN_FILTER, GL4.GL_LINEAR_MIPMAP_LINEAR);
+		gl.glTexParameteri(GL4.GL_TEXTURE_2D, GL4.GL_TEXTURE_MAG_FILTER, GL4.GL_LINEAR);
+		gl.glTexParameteri(GL4.GL_TEXTURE_2D, GL4.GL_TEXTURE_BASE_LEVEL, lodLevel);
+		gl.glTexParameteri(GL4.GL_TEXTURE_2D, GL4.GL_TEXTURE_MAX_LEVEL, lodLevel);
+
+		// Generate mipmaps
+		gl.glGenerateMipmap(GL4.GL_TEXTURE_2D);
+	}
+
+	void drawChunks(GL4 gl) {
+		Future<?> future = executor.submit(() -> updateChunks(gl));
+		try {
+			// Wait for the updateChunks method to complete (optional)
+			future.get();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		for (int i = 0; i < LoadedChunks.render_distance * 2 + 1; i++) {
+			for (int j = 0; j < LoadedChunks.render_distance * 2 + 1; j++) {
+				//calculateLOD(gl, i, j);
+				FloatBuffer vertices = GLBuffers
+						.newDirectFloatBuffer(loadedChunks.loadedChunks[i][j].generated_elevations_vertices_array);
+				gl.glBufferData(GL.GL_ARRAY_BUFFER, vertices.limit() * GLBuffers.SIZEOF_FLOAT, vertices,
+						GL.GL_STATIC_DRAW);
+				gl.glTexImage2D(
+						GL4.GL_TEXTURE_2D, 0, GL4.GL_RGBA,
+						loadedChunks.textures[i][j].getWidth(), loadedChunks.textures[i][j].getHeight(), 0,
+						GL4.GL_RGBA, GL4.GL_UNSIGNED_BYTE, loadedChunks.textures[i][j].getBuffer());
+				gl.glDrawArrays(GL.GL_TRIANGLES, 0, 1536);
+			}
+		}
 	}
 
 	@Override
@@ -167,6 +235,5 @@ public class WindowPerspective implements GLEventListener {
 
 	@Override
 	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
-		// GL4 gl = drawable.getGL().getGL4();
 	}
 }
